@@ -3,13 +3,13 @@
    ========================= */
 #chat-outline-button {
   position: fixed;
-  right: 20px;
-  bottom: 80px;
-  width: 50px;
-  height: 50px;
+  left: 270px;
+  top: 20px;
+  width: 40px;
+  height: 40px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,8 +20,8 @@
 }
 
 #chat-outline-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
 }
 
 #chat-outline-button:active {
@@ -33,31 +33,33 @@
    ========================= */
 #chat-outline-panel {
   position: fixed;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 360px;
-  max-height: 80vh;
+  left: 260px;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  height: 100vh;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   z-index: 999998;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
 }
 
 #chat-outline-panel.hidden {
-  display: none;
+  transform: translateX(-100%);
 }
 
 /* 深色模式支持 */
 @media (prefers-color-scheme: dark) {
   #chat-outline-panel {
-    background: #2d2d2d;
+    background: #1f1f1f;
     color: #e0e0e0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-right-color: #404040;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -68,43 +70,61 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 16px 16px;
   border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #f9fafb;
+  color: #374151;
+  flex-shrink: 0;
 }
 
 @media (prefers-color-scheme: dark) {
   .outline-header {
     border-bottom-color: #404040;
+    background: #2a2a2a;
+    color: #e0e0e0;
   }
 }
 
 .outline-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
+  color: #667eea;
+}
+
+@media (prefers-color-scheme: dark) {
+  .outline-header h3 {
+    color: #8b9eff;
+  }
 }
 
 .close-button {
   background: none;
   border: none;
-  color: white;
-  font-size: 24px;
+  color: #6b7280;
+  font-size: 20px;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: background 0.2s ease;
-  padding: 0;
-  line-height: 1;
 }
 
 .close-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  .close-button {
+    color: #9ca3af;
+  }
+
+  .close-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* =========================
@@ -154,49 +174,48 @@
 .outline-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 12px;
-  margin-bottom: 8px;
-  background: #f9fafb;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  background: transparent;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
 }
 
 .outline-item:hover {
   background: #f3f4f6;
   border-left-color: #667eea;
-  transform: translateX(2px);
 }
 
 @media (prefers-color-scheme: dark) {
   .outline-item {
-    background: #3a3a3a;
+    background: transparent;
   }
 
   .outline-item:hover {
-    background: #454545;
+    background: #2a2a2a;
   }
 }
 
 .outline-number {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 20px;
+  height: 20px;
+  background: #667eea;
   color: white;
-  border-radius: 50%;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
 .outline-title {
   flex: 1;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   color: #374151;
   word-break: break-word;
@@ -204,7 +223,7 @@
 
 @media (prefers-color-scheme: dark) {
   .outline-title {
-    color: #e0e0e0;
+    color: #d1d5db;
   }
 }
 
@@ -241,15 +260,24 @@
 /* =========================
    响应式适配
    ========================= */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   #chat-outline-panel {
-    width: 90vw;
-    max-width: 360px;
-    right: 5vw;
+    width: 260px;
   }
 
   #chat-outline-button {
-    right: 5vw;
-    bottom: 60px;
+    left: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  #chat-outline-panel {
+    left: 0;
+    width: 280px;
+  }
+
+  #chat-outline-button {
+    left: 10px;
+    top: 10px;
   }
 }
