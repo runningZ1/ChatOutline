@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "ChatOutline - AI对话大纲导航",
+  "version": "1.0.0",
+  "description": "为 ChatGPT、Gemini、豆包等AI聊天平台提供智能对话大纲导航",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*",
+    "https://www.doubao.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://gemini.google.com/*",
+        "https://www.doubao.com/*"
+      ],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_end"
+    }
+  ]
+}

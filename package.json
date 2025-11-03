@@ -1,0 +1,27 @@
+{
+  "name": "chat-outline",
+  "version": "1.0.0",
+  "description": "AI聊天对话大纲导航浏览器插件，支持 ChatGPT、Gemini、豆包",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "chatgpt",
+    "gemini",
+    "douyin",
+    "browser-extension",
+    "outline",
+    "navigation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.23",
+    "@types/chrome": "^0.0.268",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.5"
+  }
+}
