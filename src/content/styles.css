@@ -1,31 +1,21 @@
 /* =========================
-   悬浮按钮样式
+   触发区域样式
    ========================= */
-#chat-outline-button {
+#chat-outline-trigger {
   position: fixed;
-  left: 270px;
-  top: 20px;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: rgba(102, 126, 234, 0.15);
   z-index: 999999;
-  transition: all 0.3s ease;
-  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-#chat-outline-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
-}
-
-#chat-outline-button:active {
-  transform: scale(0.95);
+#chat-outline-trigger:hover {
+  width: 12px;
+  background: rgba(102, 126, 234, 0.3);
 }
 
 /* =========================
@@ -33,7 +23,7 @@
    ========================= */
 #chat-outline-panel {
   position: fixed;
-  left: 260px;
+  left: 0;
   top: 0;
   bottom: 0;
   width: 300px;
@@ -98,32 +88,51 @@
   }
 }
 
-.close-button {
+.pin-button {
   background: none;
   border: none;
   color: #6b7280;
-  font-size: 20px;
   cursor: pointer;
   width: 28px;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background 0.2s ease;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
-.close-button:hover {
+.pin-button:hover {
   background: rgba(0, 0, 0, 0.05);
+  color: #667eea;
+}
+
+.pin-button.pinned {
+  background: #667eea;
+  color: white;
+}
+
+.pin-button.pinned:hover {
+  background: #5568d3;
 }
 
 @media (prefers-color-scheme: dark) {
-  .close-button {
+  .pin-button {
     color: #9ca3af;
   }
 
-  .close-button:hover {
+  .pin-button:hover {
     background: rgba(255, 255, 255, 0.1);
+    color: #8b9eff;
+  }
+
+  .pin-button.pinned {
+    background: #667eea;
+  }
+
+  .pin-button.pinned:hover {
+    background: #5568d3;
   }
 }
 
@@ -264,20 +273,18 @@
   #chat-outline-panel {
     width: 260px;
   }
-
-  #chat-outline-button {
-    left: 220px;
-  }
 }
 
 @media (max-width: 768px) {
   #chat-outline-panel {
-    left: 0;
     width: 280px;
   }
 
-  #chat-outline-button {
-    left: 10px;
-    top: 10px;
+  #chat-outline-trigger {
+    width: 6px;
+  }
+
+  #chat-outline-trigger:hover {
+    width: 10px;
   }
 }

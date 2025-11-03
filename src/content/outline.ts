@@ -8,11 +8,12 @@ export class OutlineManager {
   private platform: Platform
   private messages: MessageItem[] = []
   private observer: MutationObserver | null = null
-  private floatingButton: HTMLElement | null = null
+  private triggerZone: HTMLElement | null = null
   private outlinePanel: HTMLElement | null = null
-  private isVisible: boolean = false
+  private isPinned: boolean = false
   private currentUrl: string = ''
   private urlCheckInterval: number | null = null
+  private hideTimeout: number | null = null
 
   constructor() {
     this.platform = detectPlatform()
@@ -45,7 +46,7 @@ export class OutlineManager {
 
     // 延迟一点时间，确保页面元素已加载
     setTimeout(() => {
-      this.createFloatingButton()
+      this.createTriggerZone()
       this.createOutlinePanel()
       this.startObserving()
       this.startUrlMonitoring()
@@ -54,29 +55,20 @@ export class OutlineManager {
   }
 
   /**
-   * 创建悬浮按钮
+   * 创建触发区域
    */
-  private createFloatingButton() {
-    this.floatingButton = document.createElement('div')
-    this.floatingButton.id = 'chat-outline-button'
-    this.floatingButton.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-    `
-    this.floatingButton.title = '显示对话大纲'
+  private createTriggerZone() {
+    this.triggerZone = document.createElement('div')
+    this.triggerZone.id = 'chat-outline-trigger'
+    this.triggerZone.title = '显示对话大纲'
 
-    this.floatingButton.addEventListener('click', () => {
-      this.togglePanel()
+    // 鼠标进入触发区域时显示面板
+    this.triggerZone.addEventListener('mouseenter', () => {
+      this.showPanel()
     })
 
-    document.body.appendChild(this.floatingButton)
-    console.log('[OutlineManager] 悬浮按钮已创建')
+    document.body.appendChild(this.triggerZone)
+    console.log('[OutlineManager] 触发区域已创建')
   }
 
   /**
@@ -90,16 +82,37 @@ export class OutlineManager {
     this.outlinePanel.innerHTML = `
       <div class="outline-header">
         <h3>对话大纲</h3>
-        <button class="close-button" title="关闭">×</button>
+        <button class="pin-button" title="固定面板">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 17v5"></path>
+            <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path>
+          </svg>
+        </button>
       </div>
       <div class="outline-content">
         <p class="outline-loading">正在加载...</p>
       </div>
     `
 
-    const closeButton = this.outlinePanel.querySelector('.close-button')
-    closeButton?.addEventListener('click', () => {
-      this.hidePanel()
+    // 固定按钮点击事件
+    const pinButton = this.outlinePanel.querySelector('.pin-button')
+    pinButton?.addEventListener('click', () => {
+      this.togglePin()
+    })
+
+    // 鼠标进入面板时保持显示
+    this.outlinePanel.addEventListener('mouseenter', () => {
+      if (this.hideTimeout) {
+        clearTimeout(this.hideTimeout)
+        this.hideTimeout = null
+      }
+    })
+
+    // 鼠标离开面板时（如果未固定）延迟隐藏
+    this.outlinePanel.addEventListener('mouseleave', () => {
+      if (!this.isPinned) {
+        this.scheduleHide()
+      }
     })
 
     document.body.appendChild(this.outlinePanel)
@@ -107,14 +120,34 @@ export class OutlineManager {
   }
 
   /**
-   * 切换面板显示/隐藏
+   * 切换固定状态
    */
-  private togglePanel() {
-    if (this.isVisible) {
-      this.hidePanel()
-    } else {
-      this.showPanel()
+  private togglePin() {
+    this.isPinned = !this.isPinned
+
+    const pinButton = this.outlinePanel?.querySelector('.pin-button')
+    if (pinButton) {
+      if (this.isPinned) {
+        pinButton.classList.add('pinned')
+        console.log('[OutlineManager] 面板已固定')
+      } else {
+        pinButton.classList.remove('pinned')
+        console.log('[OutlineManager] 面板已取消固定')
+      }
     }
+  }
+
+  /**
+   * 计划隐藏面板
+   */
+  private scheduleHide() {
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout)
+    }
+
+    this.hideTimeout = window.setTimeout(() => {
+      this.hidePanel()
+    }, 300)
   }
 
   /**
@@ -123,8 +156,13 @@ export class OutlineManager {
   private showPanel() {
     if (!this.outlinePanel) return
 
+    // 清除隐藏计时器
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout)
+      this.hideTimeout = null
+    }
+
     this.outlinePanel.classList.remove('hidden')
-    this.isVisible = true
     console.log('[OutlineManager] 面板已显示')
   }
 
@@ -132,10 +170,9 @@ export class OutlineManager {
    * 隐藏面板
    */
   private hidePanel() {
-    if (!this.outlinePanel) return
+    if (!this.outlinePanel || this.isPinned) return
 
     this.outlinePanel.classList.add('hidden')
-    this.isVisible = false
     console.log('[OutlineManager] 面板已隐藏')
   }
 
@@ -271,8 +308,11 @@ export class OutlineManager {
     if (this.urlCheckInterval) {
       clearInterval(this.urlCheckInterval)
     }
-    if (this.floatingButton) {
-      this.floatingButton.remove()
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout)
+    }
+    if (this.triggerZone) {
+      this.triggerZone.remove()
     }
     if (this.outlinePanel) {
       this.outlinePanel.remove()
