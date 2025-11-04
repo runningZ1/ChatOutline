@@ -146,10 +146,15 @@ class DoubaoParser implements PlatformParser {
   getUserMessages(): MessageItem[] {
     const messages: MessageItem[] = []
 
-    // 豆包可能的选择器
+    // 豆包用户消息的精确选择器
+    // 方法1: 通过插件标识符区分用户消息和AI回复
+    // 用户消息: Symbol(infra:send-message-box:text)
+    // AI回复: Symbol(infra:receive-message-box:text)
     const possibleSelectors = [
-      '.message-item.user',
-      '[data-role="user"]',
+      '[data-plugin-identifier*="send-message-box"]', // 豆包用户消息插件标识
+      '[data-testid="message_content"].justify-end',  // 豆包用户消息容器（右对齐）
+      '.message-item.user',                            // 旧版兼容
+      '[data-role="user"]',                            // 旧版兼容
       '.chat-message-user',
       '.message-box.user'
     ]
@@ -170,13 +175,21 @@ class DoubaoParser implements PlatformParser {
 
     userMessages.forEach((element, index) => {
       const htmlElement = element as HTMLElement
-      const textContent = htmlElement.innerText || htmlElement.textContent || ''
+
+      // 获取消息文本内容
+      const textElement = htmlElement.querySelector('[data-testid="message_text_content"]')
+      const textContent = textElement?.textContent?.trim() || htmlElement.innerText?.trim() || ''
+
+      // 跳过空消息
+      if (!textContent) {
+        return
+      }
 
       messages.push({
         id: `doubao-msg-${index}`,
         text: textContent,
         title: extractKeywords(textContent),
-        element: htmlElement,
+        element: htmlElement.closest('[data-testid="message_content"]') as HTMLElement || htmlElement,
         timestamp: Date.now()
       })
     })
@@ -201,6 +214,81 @@ class DoubaoParser implements PlatformParser {
 }
 
 /**
+ * 腾讯元宝消息解析器
+ */
+class YuanbaoParser implements PlatformParser {
+  getUserMessages(): MessageItem[] {
+    const messages: MessageItem[] = []
+
+    // 腾讯元宝的用户消息选择器
+    const selector = '.agent-chat__bubble--human'
+    const userMessages = document.querySelectorAll(selector)
+
+    if (userMessages.length === 0) {
+      console.warn('[Yuanbao Parser] 未找到用户消息')
+      return messages
+    }
+
+    // 使用Set去重，避免重复显示
+    const seen = new Set<string>()
+
+    userMessages.forEach((element) => {
+      const htmlElement = element as HTMLElement
+
+      // 获取文本内容
+      const textElement = htmlElement.querySelector('.hyc-content-text')
+      const textContent = textElement?.textContent?.trim() || htmlElement.innerText?.trim() || ''
+
+      // 跳过空消息
+      if (!textContent) {
+        return
+      }
+
+      // 使用消息内容+元素位置作为唯一标识来去重
+      const elementRect = htmlElement.getBoundingClientRect()
+      const uniqueKey = `${textContent}-${elementRect.top}-${elementRect.left}`
+
+      // 如果已经处理过相同的消息，跳过
+      if (seen.has(uniqueKey)) {
+        console.log('[Yuanbao Parser] 跳过重复消息:', textContent.substring(0, 30))
+        return
+      }
+
+      seen.add(uniqueKey)
+
+      messages.push({
+        id: `yuanbao-msg-${messages.length}`,
+        text: textContent,
+        title: extractKeywords(textContent),
+        element: htmlElement,
+        timestamp: Date.now()
+      })
+    })
+
+    console.log('[Yuanbao Parser] 找到用户消息数:', messages.length)
+    return messages
+  }
+
+  observeChanges(callback: () => void): MutationObserver {
+    const observer = new MutationObserver(() => {
+      callback()
+    })
+
+    // 监听对话容器的变化
+    const container = document.querySelector('.agent-chat__container')
+                   || document.querySelector('main')
+                   || document.body
+
+    observer.observe(container, {
+      childList: true,
+      subtree: true
+    })
+
+    return observer
+  }
+}
+
+/**
  * 获取平台对应的解析器
  */
 export function getParser(platform: Platform): PlatformParser | null {
@@ -211,6 +299,8 @@ export function getParser(platform: Platform): PlatformParser | null {
       return new GeminiParser()
     case Platform.DOUBAO:
       return new DoubaoParser()
+    case Platform.YUANBAO:
+      return new YuanbaoParser()
     default:
       console.error('[Parser] 不支持的平台:', platform)
       return null

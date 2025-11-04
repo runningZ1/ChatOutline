@@ -5,6 +5,7 @@ export enum Platform {
   CHATGPT = 'chatgpt',
   GEMINI = 'gemini',
   DOUBAO = 'doubao',
+  YUANBAO = 'yuanbao',
   UNKNOWN = 'unknown'
 }
 
@@ -29,6 +30,11 @@ export function detectPlatform(): Platform {
     return Platform.DOUBAO
   }
 
+  // 腾讯元宝
+  if (hostname.includes('yuanbao.tencent.com')) {
+    return Platform.YUANBAO
+  }
+
   console.warn('[ChatOutline] 未识别的平台:', hostname)
   return Platform.UNKNOWN
 }
@@ -41,6 +47,7 @@ export function getPlatformName(platform: Platform): string {
     [Platform.CHATGPT]: 'ChatGPT',
     [Platform.GEMINI]: 'Gemini',
     [Platform.DOUBAO]: '豆包',
+    [Platform.YUANBAO]: '腾讯元宝',
     [Platform.UNKNOWN]: '未知平台'
   }
   return names[platform]

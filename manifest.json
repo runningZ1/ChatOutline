@@ -11,7 +11,8 @@
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://gemini.google.com/*",
-    "https://www.doubao.com/*"
+    "https://www.doubao.com/*",
+    "https://yuanbao.tencent.com/*"
   ],
   "content_scripts": [
     {
@@ -19,7 +20,8 @@
         "https://chatgpt.com/*",
         "https://chat.openai.com/*",
         "https://gemini.google.com/*",
-        "https://www.doubao.com/*"
+        "https://www.doubao.com/*",
+        "https://yuanbao.tencent.com/*"
       ],
       "js": ["src/content/index.ts"],
       "run_at": "document_end"
