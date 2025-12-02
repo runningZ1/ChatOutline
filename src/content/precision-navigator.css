@@ -14,18 +14,26 @@
 
 /* 隐藏浏览器原生滚动条 */
 body.precision-navigation-active {
-  overflow: hidden;
-}
-
-body.precision-navigation-active #chat-outline-container {
-  height: 100vh;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
 
-body.precision-navigation-active #chat-outline-container::-webkit-scrollbar {
+body.precision-navigation-active::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
+  width: 0;
+  height: 0;
+}
+
+html.precision-navigation-active {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html.precision-navigation-active::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .scrollbar-track {
@@ -53,7 +61,7 @@ body.precision-navigation-active #chat-outline-container::-webkit-scrollbar {
   border-radius: 6px;
   cursor: grab;
   transform: translateX(-50%);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
@@ -61,12 +69,15 @@ body.precision-navigation-active #chat-outline-container::-webkit-scrollbar {
   width: 14px;
   background: #5568d3;
   box-shadow: 0 2px 12px rgba(102, 126, 234, 0.5);
+  transform: translateX(-50%) scale(1.05);
 }
 
 .scrollbar-handle.dragging {
   cursor: grabbing;
   width: 16px;
   background: #4c5fd1;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6);
+  transform: translateX(-50%) scale(1.1);
 }
 
 .scrollbar-handle-grip {
@@ -100,53 +111,84 @@ body.precision-navigation-active #chat-outline-container::-webkit-scrollbar {
   border-radius: 50%;
   cursor: pointer;
   transform: translate(-50%, -50%);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   pointer-events: all;
 }
 
 .nav-dot:hover {
-  width: 8px;
-  height: 8px;
-  background: #667eea;
-}
-
-.nav-dot.active {
   width: 10px;
   height: 10px;
   background: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+}
+
+.nav-dot.active {
+  width: 12px;
+  height: 12px;
+  background: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  animation: dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.1);
+  }
 }
 
 .nav-dot.code-dot {
   background: #10b981;
   border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .nav-dot.code-dot:hover {
   background: #059669;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .nav-dot.code-dot.active {
   background: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  animation: code-dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes code-dot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.1);
+  }
 }
 
 /* =========================
    高亮效果
    ========================= */
 .precision-highlight {
-  animation: precision-pulse 2s ease-in-out;
+  animation: precision-pulse 1.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+  position: relative;
 }
 
 @keyframes precision-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    transform: scale(1);
+  }
+  10% {
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.4);
+    transform: scale(1.01);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.2);
+    transform: scale(1.005);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    transform: scale(1);
   }
 }
 

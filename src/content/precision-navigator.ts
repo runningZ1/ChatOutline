@@ -23,8 +23,9 @@ export class PrecisionNavigator {
   init() {
     this.createScrollbar()
     this.bindEvents()
-    // 添加body class来隐藏浏览器滚动条
+    // 添加body和html class来隐藏浏览器滚动条
     document.body.classList.add('precision-navigation-active')
+    document.documentElement.classList.add('precision-navigation-active')
   }
 
   /**
@@ -210,7 +211,7 @@ export class PrecisionNavigator {
   /**
    * 更新滚动条手柄位置
    */
-  private updateScrollHandle(messageIndex: number) {
+  private updateScrollHandle(messageIndex: number, animated: boolean = true) {
     if (!this.scrollbarHandle || !this.messages.length) return
 
     const progress = messageIndex / (this.messages.length - 1)
@@ -219,6 +220,14 @@ export class PrecisionNavigator {
     const handleHeight = this.scrollbarHandle.offsetHeight
 
     const newTop = progress * (trackHeight - handleHeight)
+
+    // 添加平滑过渡动画
+    if (animated) {
+      this.scrollbarHandle.style.transition = 'top 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)'
+    } else {
+      this.scrollbarHandle.style.transition = 'none'
+    }
+
     this.scrollbarHandle.style.top = `${newTop}px`
   }
 
@@ -262,11 +271,12 @@ export class PrecisionNavigator {
 
     document.body.appendChild(this.tooltip)
 
-    // 定位tooltip
+    // 定位tooltip - 滚动条在右侧，tooltip显示在左侧
     const dotRect = (e.target as HTMLElement).getBoundingClientRect()
     this.tooltip.style.position = 'fixed'
-    this.tooltip.style.left = `${dotRect.right + 10}px`
+    this.tooltip.style.right = `${window.innerWidth - dotRect.left + 10}px`
     this.tooltip.style.top = `${dotRect.top}px`
+    this.tooltip.style.transform = 'translateY(-50%)'
   }
 
   /**
@@ -286,8 +296,9 @@ export class PrecisionNavigator {
     this.scrollbar?.remove()
     this.hideTooltip()
     this.navDots = []
-    // 移除body class恢复浏览器滚动条
+    // 移除body和html class恢复浏览器滚动条
     document.body.classList.remove('precision-navigation-active')
+    document.documentElement.classList.remove('precision-navigation-active')
     console.log('[PrecisionNavigator] 已销毁')
   }
 }
