@@ -2,307 +2,314 @@
    精准导航模式 - 滚动条样式
    ========================= */
 .precision-scrollbar {
-  position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 16px;
-  background: rgba(0, 0, 0, 0.02);
-  z-index: 999996;
-  pointer-events: all;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    background: rgba(0, 0, 0, 0.02);
+    z-index: 999996;
+    pointer-events: all;
 }
 
-/* 隐藏浏览器原生滚动条 */
-body.precision-navigation-active {
-  overflow-y: scroll;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-body.precision-navigation-active::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Opera */
-  width: 0;
-  height: 0;
-}
-
+/* 隐藏浏览器原生滚动条 - 增强版 */
+body.precision-navigation-active,
 html.precision-navigation-active {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+    overflow-y: hidden !important;
+    /* 防止双重滚动条，由JS接管或只允许特定容器滚动 */
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
 
-html.precision-navigation-active::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+/* 针对所有可能的滚动容器隐藏滚动条 */
+body.precision-navigation-active *::-webkit-scrollbar,
+html.precision-navigation-active *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* 恢复主滚动容器的滚动能力，但隐藏滚动条 */
+body.precision-navigation-active main,
+body.precision-navigation-active [class*="scroll"],
+body.precision-navigation-active #__next {
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
 
 .scrollbar-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: transparent;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: transparent;
 }
 
-.scrollbar-line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: rgba(102, 126, 234, 0.3);
-  transform: translateX(-50%);
-}
+/* Removed .scrollbar-line */
 
 .scrollbar-handle {
-  position: absolute;
-  left: 50%;
-  width: 12px;
-  background: #667eea;
-  border-radius: 6px;
-  cursor: grab;
-  transform: translateX(-50%);
-  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    position: absolute;
+    left: 50%;
+    width: 8px;
+    /* Idle width */
+    background: #e5e7eb;
+    /* Idle color: Light Grey */
+    border-radius: 9999px;
+    /* Capsule shape */
+    cursor: grab;
+    transform: translateX(-50%);
+    transition: background-color 0.2s ease, width 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 .scrollbar-handle:hover {
-  width: 14px;
-  background: #5568d3;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.5);
-  transform: translateX(-50%) scale(1.05);
+    width: 10px;
+    background: #d1d5db;
+    /* Slightly darker grey on hover */
 }
 
+.scrollbar-handle.active,
 .scrollbar-handle.dragging {
-  cursor: grabbing;
-  width: 16px;
-  background: #4c5fd1;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6);
-  transform: translateX(-50%) scale(1.1);
+    cursor: grabbing;
+    width: 12px;
+    /* Active width */
+    background: #000000;
+    /* Active color: Deep Black */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Remove the grip lines inside the handle */
 .scrollbar-handle-grip {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 4px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
+    display: none;
 }
 
 /* 导航点容器 */
 .scrollbar-dots-container {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
 }
 
 /* 导航点 */
 .nav-dot {
-  position: absolute;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  background: rgba(102, 126, 234, 0.5);
-  border-radius: 50%;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-  pointer-events: all;
+    position: absolute;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    pointer-events: all;
 }
 
 .nav-dot:hover {
-  width: 10px;
-  height: 10px;
-  background: #667eea;
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+    width: 10px;
+    height: 10px;
+    background: #667eea;
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
 }
 
 .nav-dot.active {
-  width: 12px;
-  height: 12px;
-  background: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-  animation: dot-pulse 1.5s ease-in-out infinite;
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    animation: dot-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes dot-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.1);
-  }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.1);
+    }
 }
 
 .nav-dot.code-dot {
-  background: #10b981;
-  border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    background: #10b981;
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .nav-dot.code-dot:hover {
-  background: #059669;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    background: #059669;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .nav-dot.code-dot.active {
-  background: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-  animation: code-dot-pulse 1.5s ease-in-out infinite;
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    animation: code-dot-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes code-dot-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.1);
-  }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.1);
+    }
 }
 
 /* =========================
-   高亮效果
+   高亮效果 - 增强卡点反馈
    ========================= */
 .precision-highlight {
-  animation: precision-pulse 1.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-  position: relative;
+    animation: precision-snap 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
 }
 
-@keyframes precision-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-    transform: scale(1);
-  }
-  10% {
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.4);
-    transform: scale(1.01);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.2);
-    transform: scale(1.005);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-    transform: scale(1);
-  }
+@keyframes precision-snap {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        transform: scale(1);
+    }
+
+    15% {
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.5);
+        transform: scale(1.008);
+    }
+
+    40% {
+        box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.3);
+        transform: scale(0.998);
+    }
+
+    70% {
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        transform: scale(1.002);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        transform: scale(1);
+    }
 }
 
 /* =========================
    Tooltip提示框样式
    ========================= */
 .precision-tooltip {
-  position: fixed;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 1.5;
-  max-width: 300px;
-  word-wrap: break-word;
-  z-index: 999999;
-  pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  animation: tooltip-fade-in 0.2s ease-out;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    max-width: 300px;
+    word-wrap: break-word;
+    z-index: 999999;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: tooltip-fade-in 0.2s ease-out;
 }
 
 @keyframes tooltip-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (prefers-color-scheme: dark) {
-  .precision-tooltip {
-    background: rgba(255, 255, 255, 0.95);
-    color: #1f1f1f;
-  }
+    .precision-tooltip {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1f1f1f;
+    }
 }
 
 /* =========================
    响应式适配
    ========================= */
 @media (max-width: 768px) {
-  .precision-scrollbar {
-    width: 12px;
-  }
+    .precision-scrollbar {
+        width: 12px;
+    }
 
-  .scrollbar-handle {
-    width: 10px;
-  }
+    .scrollbar-handle {
+        width: 6px;
+    }
 
-  .scrollbar-handle:hover {
-    width: 12px;
-  }
+    .scrollbar-handle:hover {
+        width: 8px;
+    }
 
-  .scrollbar-handle.dragging {
-    width: 14px;
-  }
+    .scrollbar-handle.active,
+    .scrollbar-handle.dragging {
+        width: 10px;
+    }
 }
 
 /* =========================
    深色模式详细样式
    ========================= */
 @media (prefers-color-scheme: dark) {
-  .precision-scrollbar {
-    background: rgba(0, 0, 0, 0.1);
-  }
+    .precision-scrollbar {
+        background: rgba(0, 0, 0, 0.1);
+    }
 
-  .scrollbar-line {
-    background: rgba(139, 158, 255, 0.3);
-  }
+    .scrollbar-handle {
+        background: #4b5563;
+        /* Dark Grey for idle in dark mode */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
 
-  .scrollbar-handle {
-    background: #8b9eff;
-    box-shadow: 0 2px 8px rgba(139, 158, 255, 0.3);
-  }
+    .scrollbar-handle:hover {
+        background: #6b7280;
+    }
 
-  .scrollbar-handle:hover {
-    background: #a2afff;
-    box-shadow: 0 2px 12px rgba(139, 158, 255, 0.5);
-  }
+    .scrollbar-handle.active,
+    .scrollbar-handle.dragging {
+        background: #ffffff;
+        /* White for active in dark mode */
+    }
 
-  .scrollbar-handle.dragging {
-    background: #9ba6ff;
-  }
+    .scrollbar-handle-grip {
+        display: none;
+    }
 
-  .scrollbar-handle-grip {
-    background: rgba(0, 0, 0, 0.8);
-  }
+    .nav-dot {
+        background: rgba(139, 158, 255, 0.5);
+    }
 
-  .nav-dot {
-    background: rgba(139, 158, 255, 0.5);
-  }
+    .nav-dot:hover {
+        background: #8b9eff;
+    }
 
-  .nav-dot:hover {
-    background: #8b9eff;
-  }
+    .nav-dot.active {
+        background: #8b9eff;
+        box-shadow: 0 0 0 2px rgba(139, 158, 255, 0.3);
+    }
 
-  .nav-dot.active {
-    background: #8b9eff;
-    box-shadow: 0 0 0 2px rgba(139, 158, 255, 0.3);
-  }
+    .nav-dot.code-dot {
+        background: #34d399;
+    }
 
-  .nav-dot.code-dot {
-    background: #34d399;
-  }
+    .nav-dot.code-dot:hover {
+        background: #10b981;
+    }
 
-  .nav-dot.code-dot:hover {
-    background: #10b981;
-  }
-
-  .nav-dot.code-dot.active {
-    background: #34d399;
-    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.3);
-  }
+    .nav-dot.code-dot.active {
+        background: #34d399;
+        box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.3);
+    }
 }
