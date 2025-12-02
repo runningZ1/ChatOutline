@@ -248,6 +248,66 @@
 }
 
 /* =========================
+   头部控制区域
+   ========================= */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-indicator {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mode-toggle-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.mode-toggle-button:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mode-indicator {
+    background: rgba(139, 158, 255, 0.2);
+    color: #8b9eff;
+  }
+
+  .mode-toggle-button {
+    color: #9ca3af;
+  }
+
+  .mode-toggle-button:hover {
+    background: rgba(139, 158, 255, 0.15);
+    color: #8b9eff;
+  }
+}
+
+/* =========================
    高亮动画
    ========================= */
 .outline-highlight {
