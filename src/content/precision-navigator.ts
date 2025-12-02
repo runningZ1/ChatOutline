@@ -5,13 +5,13 @@ import { MessageItem } from './parser'
  * 提供类似IDE小地图的可視化对话导航体验
  */
 export class PrecisionNavigator {
-  private minimap: HTMLElement | null = null
   private scrollbar: HTMLElement | null = null
   private scrollbarHandle: HTMLElement | null = null
   private navDots: HTMLElement[] = []
   private messages: MessageItem[] = []
   private isDragging: boolean = false
   private currentMessageIndex: number = 0
+  private tooltip: HTMLElement | null = null
 
   constructor() {
     console.log('[PrecisionNavigator] 初始化精准导航模式')
@@ -21,33 +21,8 @@ export class PrecisionNavigator {
    * 初始化精准导航组件
    */
   init() {
-    this.createMinimap()
     this.createScrollbar()
     this.bindEvents()
-  }
-
-  /**
-   * 创建小地图容器
-   */
-  private createMinimap() {
-    this.minimap = document.createElement('div')
-    this.minimap.id = 'precision-minimap'
-    this.minimap.className = 'precision-minimap'
-
-    this.minimap.innerHTML = `
-      <div class="minimap-header">
-        <span class="minimap-title">对话地图</span>
-        <div class="minimap-controls">
-          <button class="minimap-zoom-in" title="放大">+</button>
-          <button class="minimap-zoom-out" title="缩小">-</button>
-        </div>
-      </div>
-      <div class="minimap-content">
-        <div class="minimap-messages"></div>
-      </div>
-    `
-
-    document.body.appendChild(this.minimap)
   }
 
   /**
@@ -88,10 +63,6 @@ export class PrecisionNavigator {
 
     // 滚轮事件
     document.addEventListener('wheel', this.handleWheel.bind(this))
-
-    // 缩放控制
-    this.minimap?.querySelector('.minimap-zoom-in')?.addEventListener('click', () => this.zoomIn())
-    this.minimap?.querySelector('.minimap-zoom-out')?.addEventListener('click', () => this.zoomOut())
   }
 
   /**
@@ -165,22 +136,6 @@ export class PrecisionNavigator {
   }
 
   /**
-   * 缩小小地图
-   */
-  private zoomOut() {
-    this.minimap?.classList.add('zoomed-out')
-    this.minimap?.classList.remove('zoomed-in')
-  }
-
-  /**
-   * 放大小地图
-   */
-  private zoomIn() {
-    this.minimap?.classList.add('zoomed-in')
-    this.minimap?.classList.remove('zoomed-out')
-  }
-
-  /**
    * 更新导航点
    */
   updateNavigationDots(messages: MessageItem[]) {
@@ -198,7 +153,6 @@ export class PrecisionNavigator {
       dot.className = 'nav-dot'
       dot.setAttribute('data-message-id', message.id)
       dot.setAttribute('data-index', index.toString())
-      dot.title = message.title
 
       // 根据消息类型设置不同的样式
       if (this.isCodeMessage(message.title)) {
@@ -213,6 +167,15 @@ export class PrecisionNavigator {
       dot.addEventListener('click', () => {
         this.scrollToMessage(index)
         this.updateScrollHandle(index)
+      })
+
+      // 鼠标悬浮显示提问原文
+      dot.addEventListener('mouseenter', (e) => {
+        this.showTooltip(e as MouseEvent, message.title)
+      })
+
+      dot.addEventListener('mouseleave', () => {
+        this.hideTooltip()
       })
 
       dotsContainer.appendChild(dot)
@@ -284,36 +247,42 @@ export class PrecisionNavigator {
   }
 
   /**
-   * 更新小地图内容
+   * 显示提示框
    */
-  updateMinimap(messages: MessageItem[]) {
-    const minimapContent = this.minimap?.querySelector('.minimap-messages')
-    if (!minimapContent) return
+  private showTooltip(e: MouseEvent, text: string) {
+    // 移除现有tooltip
+    this.hideTooltip()
 
-    minimapContent.innerHTML = messages.map((msg, index) => `
-      <div class="minimap-message ${this.isCodeMessage(msg.title) ? 'code-message' : ''}"
-           data-index="${index}"
-           title="${msg.title}">
-        <div class="minimap-message-indicator"></div>
-        <div class="minimap-message-title">${msg.title}</div>
-      </div>
-    `).join('')
+    // 创建新tooltip
+    this.tooltip = document.createElement('div')
+    this.tooltip.className = 'precision-tooltip'
+    this.tooltip.textContent = text
 
-    // 绑定点击事件
-    minimapContent.querySelectorAll('.minimap-message').forEach((element, index) => {
-      element.addEventListener('click', () => {
-        this.scrollToMessage(index)
-        this.updateScrollHandle(index)
-      })
-    })
+    document.body.appendChild(this.tooltip)
+
+    // 定位tooltip
+    const dotRect = (e.target as HTMLElement).getBoundingClientRect()
+    this.tooltip.style.position = 'fixed'
+    this.tooltip.style.left = `${dotRect.right + 10}px`
+    this.tooltip.style.top = `${dotRect.top}px`
+  }
+
+  /**
+   * 隐藏提示框
+   */
+  private hideTooltip() {
+    if (this.tooltip) {
+      this.tooltip.remove()
+      this.tooltip = null
+    }
   }
 
   /**
    * 销毁导航器
    */
   destroy() {
-    this.minimap?.remove()
     this.scrollbar?.remove()
+    this.hideTooltip()
     this.navDots = []
     console.log('[PrecisionNavigator] 已销毁')
   }

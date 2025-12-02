@@ -262,7 +262,6 @@ export class OutlineManager {
       this.renderOutline()
     } else if (this.precisionNavigator) {
       this.precisionNavigator.updateNavigationDots(this.messages)
-      this.precisionNavigator.updateMinimap(this.messages)
     }
   }
 
