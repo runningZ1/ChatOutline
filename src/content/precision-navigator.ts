@@ -23,6 +23,8 @@ export class PrecisionNavigator {
   init() {
     this.createScrollbar()
     this.bindEvents()
+    // 添加body class来隐藏浏览器滚动条
+    document.body.classList.add('precision-navigation-active')
   }
 
   /**
@@ -284,6 +286,8 @@ export class PrecisionNavigator {
     this.scrollbar?.remove()
     this.hideTooltip()
     this.navDots = []
+    // 移除body class恢复浏览器滚动条
+    document.body.classList.remove('precision-navigation-active')
     console.log('[PrecisionNavigator] 已销毁')
   }
 }

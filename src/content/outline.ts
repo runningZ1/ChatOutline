@@ -17,13 +17,16 @@ export class OutlineManager {
   private hideTimeout: number | null = null
   private precisionNavigator: PrecisionNavigator | null = null
   private navigationMode: 'outline' | 'precision' = 'outline' // 导航模式
+  private outlinePosition: 'left' | 'right' = 'right' // 大纲位置
 
   constructor() {
     this.platform = detectPlatform()
     this.currentUrl = window.location.href
-    this.navigationMode = this.loadNavigationMode()
+    this.loadSettings()
+    this.setupMessageListener()
     console.log('[OutlineManager] 检测到平台:', getPlatformName(this.platform))
     console.log('[OutlineManager] 导航模式:', this.navigationMode)
+    console.log('[OutlineManager] 大纲位置:', this.outlinePosition)
   }
 
   /**
@@ -320,18 +323,71 @@ export class OutlineManager {
   }
 
   /**
-   * 加载导航模式设置
+   * 加载设置
    */
-  private loadNavigationMode(): 'outline' | 'precision' {
-    const saved = localStorage.getItem('chat-outline-navigation-mode')
-    return (saved === 'outline' || saved === 'precision') ? saved : 'outline'
+  private async loadSettings() {
+    try {
+      const result = await chrome.storage.local.get(['navigationMode', 'outlinePosition'])
+      this.navigationMode = (result.navigationMode === 'precision') ? 'precision' : 'outline'
+      this.outlinePosition = (result.outlinePosition === 'left') ? 'left' : 'right'
+    } catch (error) {
+      console.error('[OutlineManager] 加载设置失败:', error)
+      // 使用默认值
+      this.navigationMode = 'outline'
+      this.outlinePosition = 'right'
+    }
+  }
+
+  /**
+   * 设置消息监听器
+   */
+  private setupMessageListener() {
+    chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+      if (message.type === 'UPDATE_SETTINGS') {
+        const { settings } = message
+        console.log('[OutlineManager] 收到设置更新:', settings)
+
+        if (settings.navigationMode && settings.navigationMode !== this.navigationMode) {
+          this.setNavigationMode(settings.navigationMode)
+        }
+
+        if (settings.outlinePosition && settings.outlinePosition !== this.outlinePosition) {
+          this.outlinePosition = settings.outlinePosition
+          this.updateOutlinePosition()
+        }
+      }
+    })
+  }
+
+  /**
+   * 更新大纲位置
+   */
+  private updateOutlinePosition() {
+    if (!this.outlinePanel || this.navigationMode !== 'outline') return
+
+    // 移除旧的位置class
+    this.outlinePanel.classList.remove('position-left', 'position-right')
+    // 添加新的位置class
+    this.outlinePanel.classList.add(`position-${this.outlinePosition}`)
+
+    // 同样更新触发区域
+    if (this.triggerZone) {
+      this.triggerZone.classList.remove('position-left', 'position-right')
+      this.triggerZone.classList.add(`position-${this.outlinePosition}`)
+    }
+
+    console.log('[OutlineManager] 大纲位置已更新:', this.outlinePosition)
   }
 
   /**
    * 保存导航模式设置
    */
-  private saveNavigationMode(mode: 'outline' | 'precision') {
-    localStorage.setItem('chat-outline-navigation-mode', mode)
+  private async saveNavigationMode(mode: 'outline' | 'precision') {
+    try {
+      await chrome.storage.local.set({ navigationMode: mode })
+    } catch (error) {
+      console.error('[OutlineManager] 保存导航模式失败:', error)
+    }
   }
 
   /**
@@ -390,6 +446,8 @@ export class OutlineManager {
   private initOutlineMode() {
     this.createTriggerZone()
     this.createOutlinePanel()
+    // 应用位置设置
+    this.updateOutlinePosition()
   }
 
   /**

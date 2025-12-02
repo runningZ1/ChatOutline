@@ -13,6 +13,12 @@
   transition: all 0.2s ease;
 }
 
+/* 右侧位置 */
+#chat-outline-trigger.position-right {
+  left: auto;
+  right: 0;
+}
+
 #chat-outline-trigger:hover {
   width: 12px;
   background: rgba(102, 126, 234, 0.3);
@@ -39,8 +45,22 @@
   transform: translateX(0);
 }
 
+/* 右侧位置 */
+#chat-outline-panel.position-right {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
 #chat-outline-panel.hidden {
   transform: translateX(-100%);
+}
+
+/* 右侧位置的隐藏效果 */
+#chat-outline-panel.position-right.hidden {
+  transform: translateX(100%);
 }
 
 /* 深色模式支持 */

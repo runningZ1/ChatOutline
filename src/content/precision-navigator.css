@@ -3,13 +3,29 @@
    ========================= */
 .precision-scrollbar {
   position: fixed;
-  left: 0;
+  right: 0;
   top: 0;
   bottom: 0;
   width: 16px;
   background: rgba(0, 0, 0, 0.02);
   z-index: 999996;
   pointer-events: all;
+}
+
+/* 隐藏浏览器原生滚动条 */
+body.precision-navigation-active {
+  overflow: hidden;
+}
+
+body.precision-navigation-active #chat-outline-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+body.precision-navigation-active #chat-outline-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .scrollbar-track {

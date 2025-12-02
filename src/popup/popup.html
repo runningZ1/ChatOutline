@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatOutline 设置</title>
+  <link rel="stylesheet" href="./popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <h1>ChatOutline</h1>
+      <p class="popup-subtitle">AI对话导航助手</p>
+    </header>
+
+    <main class="popup-content">
+      <!-- 导航模式选择 -->
+      <section class="setting-section">
+        <h2 class="section-title">导航模式</h2>
+        <div class="mode-options">
+          <label class="mode-option">
+            <input type="radio" name="navigationMode" value="outline" />
+            <div class="mode-card">
+              <div class="mode-icon">📝</div>
+              <div class="mode-info">
+                <h3>大纲模式</h3>
+                <p>列表式展示对话大纲</p>
+              </div>
+            </div>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="navigationMode" value="precision" />
+            <div class="mode-card">
+              <div class="mode-icon">🎯</div>
+              <div class="mode-info">
+                <h3>导航地图模式</h3>
+                <p>可视化滚动条快速定位</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <!-- 大纲模式位置设置 -->
+      <section class="setting-section outline-position-section">
+        <h2 class="section-title">大纲面板位置</h2>
+        <div class="position-options">
+          <label class="position-option">
+            <input type="radio" name="outlinePosition" value="left" />
+            <span class="position-label">
+              <span class="position-icon">⬅️</span>
+              左侧
+            </span>
+          </label>
+          <label class="position-option">
+            <input type="radio" name="outlinePosition" value="right" />
+            <span class="position-label">
+              <span class="position-icon">➡️</span>
+              右侧
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 状态提示 -->
+      <div class="status-message" id="statusMessage"></div>
+    </main>
+
+    <footer class="popup-footer">
+      <p>v1.0.0 | Made with ❤️</p>
+    </footer>
+  </div>
+
+  <script src="./popup.ts" type="module"></script>
+</body>
+</html>

@@ -7,7 +7,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        content: 'src/content/index.ts'
+        content: 'src/content/index.ts',
+        popup: 'src/popup/popup.ts'
       }
     }
   }
